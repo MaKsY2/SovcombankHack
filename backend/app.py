@@ -8,7 +8,8 @@ CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
-db.create_all()
+with app.app_context():
+    db.create_all()
 
 # auth = HTTPBasicAuth()
 
