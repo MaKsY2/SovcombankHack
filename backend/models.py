@@ -54,6 +54,8 @@ class Account(db.Model):
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
+
+    id = db.Column(db.Integer, primary_key=True)
     from_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     to_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     from_value = db.Column(db.Float, nullable=False)
