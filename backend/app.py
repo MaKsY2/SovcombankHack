@@ -1,9 +1,13 @@
 import flask as fl
 from flask_cors import CORS
+from models import db
 
 
 app = fl.Flask(__name__)
 CORS(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
+db.init_app(app)
 
 
 @app.route('/index')
