@@ -1,12 +1,15 @@
 import flask as fl
 from flask_cors import CORS
 from models import db, User
+# from flask_httpauth import HTTPBasicAuth
 
 app = fl.Flask(__name__)
 CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
+
+# auth = HTTPBasicAuth()
 
 
 @app.route('/index')
@@ -16,7 +19,15 @@ def index():
 
 @app.route('/api/employees/login', methods=['POST'])
 def employee_login():
-    return {"status": "OK"}
+    try:
+        phone = fl.request.json['phone']
+        password = fl.request.json['password']
+    except KeyError:
+        fl.abort(400)
+        return
+    if phone == '89876543210' and password == 'admin':
+        return {'status': 'OK'}
+    return fl.Response(status=403)
 
 
 @app.route('/api/users/', methods=['POST'])
@@ -54,6 +65,12 @@ def users():
             "father_name": user.father_name,
             "status": user.status
         }
+
+
+# @app.route('/users/<user_id>/activate', methods=['POST'])
+# @auth.login_required
+# def user_activate(user_id: int):
+#     user = User.objects.get()
 
 
 if __name__ == '__main__':
