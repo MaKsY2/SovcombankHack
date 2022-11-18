@@ -47,6 +47,6 @@ class Account(db.Model):
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     currency = db.relationship('Currency', uselist=False, back_populates='accounts')
     value = db.Column(db.Float, default=0.0)
-    user_id = db.Columns(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('User', uselist=False, back_populates='accounts')
 
