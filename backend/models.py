@@ -40,6 +40,6 @@ class Currency(db.Model):
 class Account(db.Model):
     __tablename__ = 'accounts'
 
-    id = db.Columns(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
     currency = db.relationship("Currency", uselist=False, back_populates="accounts")
