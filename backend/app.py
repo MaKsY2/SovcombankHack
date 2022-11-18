@@ -1,6 +1,6 @@
 import flask as fl
 from flask_cors import CORS
-from models import db, User
+from models import db, User, Currency, Account
 # from flask_httpauth import HTTPBasicAuth
 
 app = fl.Flask(__name__)
@@ -14,6 +14,9 @@ db.init_app(app)
 
 @app.route('/index')
 def index():
+    currency = Currency(tag='RUB', name='Российский рубль')
+    db.session.add(currency)
+    db.session.commit()
     return 'hello'
 
 
@@ -68,9 +71,17 @@ def users():
 
 
 # @app.route('/users/<user_id>/activate', methods=['POST'])
-# @auth.login_required
+# # @auth.login_required
 # def user_activate(user_id: int):
-#     user = User.objects.get()
+#     if not isinstance(user_id, int):
+#         fl.abort(400)
+#         return
+#     user = User.query.get(user_id)
+#     if user.status != 'pending':
+#         return {'error': 'user is already activated'}, 403
+#     user.status = 'pending'
+#     db.session.add(user)
+#
 
 
 if __name__ == '__main__':
