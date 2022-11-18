@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 from passlib.apps import custom_app_context as pwd_context
 
 
@@ -43,10 +44,19 @@ class Account(db.Model):
     __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
-    currency = db.relationship('Currency', uselist=False, back_populates='accounts')
     value = db.Column(db.Float, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    currency = db.relationship('Currency', uselist=False, back_populates='accounts')
     user = db.relationship('User', uselist=False, back_populates='accounts')
 
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    from_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    to_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    from_value = db.Column(db.Float, nullable=False)
+    to_value = db.Column(db.Float, nullable=False)
+    exchange_rate = db.Column(db.Float, nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
