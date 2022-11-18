@@ -17,6 +17,8 @@ class User(db.Model):
     status = db.Column(db.String(100), default='pending')
     password_hash = db.Column(db.String(1000), nullable=False)
 
+    accounts = db.relationship('Account', back_populates='user')
+
     def hash_password(self, password):
         self.password_hash = pwd_context.encrypt(password)
 
@@ -41,5 +43,10 @@ class Account(db.Model):
     __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key=True)
+
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
-    currency = db.relationship("Currency", uselist=False, back_populates="accounts")
+    currency = db.relationship('Currency', uselist=False, back_populates='accounts')
+    value = db.Column(db.Float, default=0.0)
+    user_id = db.Columns(db.Integer, db.ForeignKey('users.id'))
+    user = db.relationship('User', uselist=False, back_populates='accounts')
+
