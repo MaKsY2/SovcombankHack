@@ -6,6 +6,8 @@ db = SQLAlchemy()
 
 
 class User(db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     phone = db.Column(db.String(100), unique=True, nullable=False)
     passport = db.Column(db.String(10), unique=True, nullable=False)
@@ -23,3 +25,21 @@ class User(db.Model):
 
     def __repr__(self):
         return f'User<{self.id}>'
+
+
+class Currency(db.Model):
+    __tablename__ = 'currencies'
+
+    id = db.Column(db.Integer, primary_key=True)
+    tag = db.Column(db.String(10), nullable=False, unique=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    accounts = db.relationship("Account", back_populates="currency")
+
+
+class Account(db.Model):
+    __tablename__ = 'accounts'
+
+    id = db.Columns(db.Integer, primary_key=True)
+    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
+    currency = db.relationship("Currency", uselist=False, back_populates="accounts")
