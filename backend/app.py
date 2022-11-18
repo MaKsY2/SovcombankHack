@@ -16,9 +16,9 @@ with app.app_context():
 
 @app.route('/index')
 def index():
-    currency = Currency(tag='RUB', name='Российский рубль')
-    db.session.add(currency)
-    db.session.commit()
+    # currency = Currency(tag='RUB', name='Российский рубль')
+    # db.session.add(currency)
+    # db.session.commit()
     return 'hello'
 
 
