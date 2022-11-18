@@ -15,7 +15,7 @@ def index():
     return 'hello'
 
 
-@app.route('/api/employees/login')
+@app.route('/api/employees/login', methods=['POST'])
 def employee_login():
     return {"status": "OK"}
 
