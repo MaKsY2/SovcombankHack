@@ -84,9 +84,6 @@ def user_handler(user_id: int):
         status = fl.request.json.get('status', '')
         if status == 'active':
             user_id = int(user_id)
-            user = User.query.get(user_id)
-            if not user:
-                return {'error': f'user with id {user_id} not found'}, 404
             if not user.accounts:
                 account = Account(currency_id=1, amount=0, user_id=user_id)
                 db.session.add(account)
