@@ -102,7 +102,7 @@ def user_activate(user_id: int):
         return {'error': 'user is already activated'}, 403
     user.status = 'active'
     db.session.add(user)
-    account = Account(currency_id=1, value=0, user_id=user_id)
+    account = Account(currency_id=1, amount=0, user_id=user_id)
     db.session.add(account)
     db.session.commit()
     return {'user_id': user_id}, 200
