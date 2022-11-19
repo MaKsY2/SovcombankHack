@@ -77,7 +77,7 @@ def user_handler(user_id: int):
     if fl.request.method == 'GET':
         return user.json
     if fl.request.method == 'PATCH':
-        action = fl.request.args.get('action', '')
+        action = fl.request.json.get('action', '')
         if action == 'block':
             user.status = 'blocked'
         elif action == 'unblock':
@@ -139,8 +139,6 @@ def transactions_handler():
         from_account = Account.query.get(from_account_id)
         to_account = Account.query.get(to_account_id)
         currencies = (from_account.currency.tag, to_account.currency.tag)
-
-
 
 
 if __name__ == '__main__':
