@@ -223,35 +223,44 @@ def transactions_handler():
             accounts = Account.query.all()
         return [account.json for account in accounts]
     if fl.request.method == 'POST':
-        from_account_id = fl.request.json.get('from_account_id', None)
-        to_account_id = fl.request.json.get('to_account_id', None)
-        from_value = fl.request.json.get('from_value', None)
-        to_value = fl.request.json.get('to_value', None)
-        if not (from_account_id and to_account_id and (from_value or to_value)):
-            return {}, 404
-        from_account = Account.query.get(from_account_id)
-        to_account = Account.query.get(to_account_id)
-        currencies = (from_account.currency.tag, to_account.currency.tag)
-        if from_value is None and to_value:
-            from_value, to_value = (to_value, from_value)
-            currencies = (currencies[1], currencies[0])
-            url = f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={from_value}'
-            headers = {"apikey": app.config['APILAYER_KEY']}
-            res = requests.get(url, headers=headers)
-            if res.status_code != 200:
-                return {'error': 'Error fetching currency'}, 500
-            result = res.json()
-            transaction = Transaction(
-                from_account_id=from_account_id,
-                to_account_id=to_account_id,
-                from_value=from_value,
-                to_value=result['result'],
-                exchange_rate=result['info']['quote'],
-                timestamp=dt.datetime.utcnow()
-            )
-            db.session.add(transaction)
-            db.session.commit()
-            return transaction.json
+        sell_account_id = fl.request.json.get('sell_account_id', None)
+        buy_account_id = fl.request.json.get('buy_account_id', None)
+        sell_value = fl.request.json.get('sell_value', None)
+        buy_value = fl.request.json.get('buy_value', None)
+        if not (sell_account_id and buy_account_id and (bool(sell_value) != bool(buy_value))):
+            return {'error': 'Not enough parameters'}, 400
+        sell_account = Account.query.get(sell_account_id)
+        buy_account = Account.query.get(buy_account_id)
+        currencies = (sell_account.currency.tag, buy_account.currency.tag)
+
+        value = sell_value or buy_value
+        url = f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={value}'
+        headers = {"apikey": app.config['APILAYER_KEY']}
+        res = requests.get(url, headers=headers)
+        if res.status_code != 200:
+            return {'error': 'Error fetching currency'}, 500
+        result = res.json()
+        if buy_value:
+            sell_value = round(result['result'])
+        else:
+            buy_value = round(result['result'])
+        if sell_value > sell_account.amount:
+            return {'error': 'Not enough amount to sell'}, 403
+        sell_account.amount -= sell_value
+        buy_account.amount += buy_value
+        transaction = Transaction(
+            selll_account_id=sell_account_id,
+            buy_account_id=buy_account_id,
+            sell_value=sell_value,
+            buy_value=buy_value,
+            exchange_rate=result['info']['quote'],
+            timestamp=dt.datetime.utcnow()
+        )
+        db.session.add(sell_account)
+        db.session.add(buy_account)
+        db.session.add(transaction)
+        db.session.commit()
+        return transaction.json
 
 
 @app.route('/api/currencies', methods=['GET'])

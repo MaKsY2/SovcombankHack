@@ -66,7 +66,7 @@ class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
-    amount = db.Column(db.Float, default=0.0)
+    amount = db.Column(db.Integer, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     currency = db.relationship('Currency', uselist=False, back_populates='accounts')
@@ -86,21 +86,21 @@ class Transaction(db.Model):
     __tablename__ = 'transactions'
 
     id = db.Column(db.Integer, primary_key=True)
-    from_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
-    to_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
-    from_value = db.Column(db.Float, nullable=False)
-    to_value = db.Column(db.Float, nullable=False)
-    exchange_rate = db.Column(db.Float, nullable=False)
+    sell_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    buy_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    sell_value = db.Column(db.Integer, nullable=False)
+    buy_value = db.Column(db.Integer, nullable=False)
+    exchange_rate = db.Column(db.Integer, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     @property
     def json(self):
         return {
             "id": self.id,
-            "from_account_id": self.from_account_id,
-            "to_account_id": self.to_account_id,
-            "from_value": self.from_value,
-            "to_value": self.to_value,
+            "sell_account_id": self.sell_account_id,
+            "buy_account_id": self.buy_account_id,
+            "sell_value": self.sell_value,
+            "buy_value": self.buy_value,
             "exchange_rate": self.exchange_rate,
             "timestamp": self.timestamp.isoformat()
         }
