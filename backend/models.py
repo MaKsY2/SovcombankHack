@@ -29,6 +29,7 @@ class User(db.Model):
     @property
     def json(self):
         return {
+            "id": self.id,
             "phone": self.phone,
             "passport": self.passport,
             "first_name": self.first_name,
