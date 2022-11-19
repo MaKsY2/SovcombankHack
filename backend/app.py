@@ -4,7 +4,7 @@ from models import db, User, Account
 # from flask_httpauth import HTTPBasicAuth
 
 app = fl.Flask(__name__)
-CORS(app)
+# CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
@@ -116,6 +116,28 @@ def accounts_handler():
         db.session.add(account)
         db.session.commit()
         return account.json
+
+
+@app.route('/api/transactions', methods=['GET', 'POST'])
+def transactions_handler():
+    if fl.request.method == 'GET':
+        if user_id := fl.request.args.get('user_id', None):
+            accounts = Account.query.filter_by(user_id=user_id)
+        else:
+            accounts = Account.query.all()
+        return [account.json for account in accounts]
+    if fl.request.method == 'POST':
+        from_account_id = fl.request.json.get('from_account_id', None)
+        to_account_id = fl.request.json.get('to_account_id', None)
+        from_value = fl.request.json.get('from_value', None)
+        to_value = fl.request.json.get('to_value', None)
+        if not (from_account_id and to_account_id and (from_value or to_value)):
+            return {}, 404
+        from_account = Account.query.get(from_account_id)
+        to_account = Account.query.get(to_account_id)
+        currencies = (from_account.currency.tag, to_account.currency.tag)
+
+
 
 
 if __name__ == '__main__':
