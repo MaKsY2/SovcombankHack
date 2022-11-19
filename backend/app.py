@@ -77,14 +77,8 @@ def user_handler(user_id: int):
     if fl.request.method == 'GET':
         return user.json
     if fl.request.method == 'PATCH':
-        action = fl.request.json.get('action', '')
-        if action == 'block':
-            user.status = 'blocked'
-        elif action == 'unblock':
-            user.status = 'active'
-        elif action == 'decline':
-            user.status = 'declined'
-        elif action == 'activate':
+        status = fl.request.json.get('status', '')
+        if status == 'active':
             user_id = int(user_id)
             user = User.query.get(user_id)
             if not user:
@@ -93,9 +87,9 @@ def user_handler(user_id: int):
                 return {'error': 'user is already activated'}, 403
             account = Account(currency_id=1, amount=0, user_id=user_id)
             db.session.add(account)
-            user.status = 'active'
         else:
             return {'error': 'action is not allowed'}, 403
+        user.status = 'active'
     if fl.request.method == 'DELETE':
         user.status = 'delete'
     db.session.add(user)
