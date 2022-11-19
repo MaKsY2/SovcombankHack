@@ -17,10 +17,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhos
 db.init_app(app)
 with app.app_context():
     db.create_all()
-    employee = Employee(phone='89876543210')
-    employee.hash_password('admin')
-    db.session.add(employee)
-    db.session.commit()
 
 
 def token_required(f):

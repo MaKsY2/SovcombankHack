@@ -110,7 +110,7 @@ class Employee(db.Model):
     __tablename__ = 'employees'
 
     id = db.Column(db.Integer, primary_key=True)
-    phone = db.Column(db.String(100))
+    phone = db.Column(db.String(100), unique=True)
     password_hash = db.Column(db.String(1000), nullable=False)
 
     def hash_password(self, password):
