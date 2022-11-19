@@ -65,7 +65,7 @@ def users():
         if status:
             users = User.query.filter_by(status=status).all()
         else:
-            users = User.query.filter(User.status != 'pending')
+            users = User.query.filter(User.status != 'pending' and User.status != 'declined')
         return [user.json for user in users]
 
 
@@ -82,8 +82,8 @@ def user_handler(user_id: int):
             user.status = 'blocked'
         elif action == 'unblock':
             user.status = 'active'
-        elif action == 'reject':
-            user.status = 'rejected'
+        elif action == 'decline':
+            user.status = 'declined'
         elif action == 'activate':
             user_id = int(user_id)
             user = User.query.get(user_id)
@@ -104,7 +104,7 @@ def user_handler(user_id: int):
 
 
 @app.route('/api/accounts/', methods=['GET', 'POST'])
-def accounts():
+def accounts_handler():
     if fl.request.method == 'GET':
         accounts = Account.query.all()
         return [account.json for account in accounts]
