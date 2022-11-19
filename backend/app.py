@@ -45,7 +45,7 @@ def user_login():
         # returns 401 if any email or / and password is missing
         return fl.make_response(
             'Could not verify',
-            401,
+            400,
             {'WWW-Authenticate': 'Basic realm ="Login required !!"'}
         )
     user = User.query \
