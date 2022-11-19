@@ -58,6 +58,13 @@ def user_login():
         )
 
     if user.verify_password(auth.get('password')):
+        if user.status != 'active':
+            fl.make_response(
+                'User was not activated',
+                403,
+                {'WWW-Authenticate': 'Basic realm ="User was not activated !!"'}
+            )
+
         # generates the JWT Token
         token = jwt.encode({
             'user_id': user.id,
