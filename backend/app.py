@@ -234,7 +234,7 @@ def currencies_handler():
     result = response.json()['quotes']
     formatted_result = dict()
     for key in result:
-        formatted_result[key[:3]] = result.pop(key)
+        formatted_result[key[:3]] = result.get(key)
     return list(formatted_result.items())
 
 
