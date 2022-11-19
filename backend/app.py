@@ -6,11 +6,13 @@ import flask as fl
 # from flask_cors import CORS
 from models import db, User, Account, Currency, Transaction
 import jwt
+from config import SECRET_KEY, APILAYER_KEY
 
 app = fl.Flask(__name__)
 # CORS(app)
 
-app.config['SECRET_KEY'] = 'secret!'
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['APILAYER_KEY'] = APILAYER_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
 with app.app_context():
@@ -207,7 +209,7 @@ def transactions_handler():
             from_value, to_value = (to_value, from_value)
             currencies = (currencies[1], currencies[0])
             url = f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={from_value}'
-            headers = {"apikey": "EF7FlFQECktMxQLiVtc87Edy9pW0Frvd"}
+            headers = {"apikey": app.config['APILAYER_KEY']}
             res = requests.get(url, headers=headers)
             if res.status_code != 200:
                 return {'error': 'Error fetching currency'}, 500
@@ -229,7 +231,7 @@ def transactions_handler():
 def currencies_handler():
     base_tag = fl.request.args.get('base_tag', 'RUB')
     url = f"https://api.apilayer.com/currency_data/live?source={base_tag}"
-    headers = {"apikey": "EF7FlFQECktMxQLiVtc87Edy9pW0Frvd"}
+    headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
     return [{'tag': key[3:], 'rate': rate} for key, rate in result.items()]
