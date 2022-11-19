@@ -148,7 +148,6 @@ def users():
         fl.abort(400)
         return
     user = User.query.filter_by(phone=phone).first()
-    print(user.json)
     if user:
         return {'error': 'user already exists'}, 403
     user = User(
