@@ -249,7 +249,11 @@ def currency_handler(tag):
     start_date = fl.request.args.get('start_date',
                                      dt.date.today() - dt.timedelta(days=timedelta))
     end_date = fl.request.args.get('end_date', dt.date.today())
-    url = "https://api.apilayer.com/currency_data/timeframe?start_date=2018-02-25&end_date=2018-02-26"
+    url = f"https://api.apilayer.com/currency_data/timeframe" \
+          f"?start_date={start_date}" \
+          f"&end_date={end_date}" \
+          f"&source={base_tag}" \
+          f"&currencies={currency.tag}"
     headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.get(url, headers)
     if response.status_code != 200:
