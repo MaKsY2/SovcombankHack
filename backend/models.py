@@ -77,7 +77,7 @@ class Account(db.Model):
             'id': self.id,
             'currency': self.currency.json,
             'amount': self.amount,
-            'user': self.user.json
+            'user_id': self.user_id
         }
 
 
