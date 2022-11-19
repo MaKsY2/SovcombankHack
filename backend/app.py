@@ -65,7 +65,7 @@ def users():
         if status:
             users = User.query.filter_by(status=status).all()
         else:
-            users = User.query.all()
+            users = User.query.filter(User.status != 'pending')
         return [user.json for user in users]
 
 
