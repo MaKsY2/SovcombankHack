@@ -203,7 +203,9 @@ def transactions_handler():
         if from_value is None and to_value:
             from_value, to_value = (to_value, from_value)
             currencies = (currencies[1], currencies[0])
-            res = requests.get(f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={from_value}')
+            url = f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={from_value}'
+            headers = {"apikey": "EF7FlFQECktMxQLiVtc87Edy9pW0Frvd"}
+            res = requests.get(url, headers=headers)
             if res.status_code != 200:
                 return {'error': 'Error fetching currency'}, 500
             result = res.json()
