@@ -69,7 +69,7 @@ def users():
         return [user.json for user in users]
 
 
-@app.route('/users/<id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/users/<id>', methods=['GET', 'PATCH', 'DELETE'])
 def user_handler(user_id: int):
     user = User.query.get(user_id)
     if not user:
@@ -91,7 +91,7 @@ def user_handler(user_id: int):
     return user.json
 
 
-@app.route('/users/<user_id>/activate', methods=['POST'])
+@app.route('/api/users/<user_id>/activate', methods=['POST'])
 # @auth.login_required
 def user_activate(user_id: int):
     if not isinstance(user_id, int):
