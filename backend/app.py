@@ -4,7 +4,7 @@ from models import db, User, Account, Currency
 # from flask_httpauth import HTTPBasicAuth
 
 app = fl.Flask(__name__)
-CORS(app)
+# CORS(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
