@@ -217,8 +217,9 @@ def cash_handler():
             cash = Cash.query.filter_by(account_id=account_id)
         else:
             cash = Cash.query.all()
+        return [c.json for c in cash], 200
     if fl.request.method == 'POST':
-        account_id = fl.request.json.get('accound_id')
+        account_id = fl.request.json.get('account_id')
         value = fl.request.json.get('value')
         if not account_id or not isinstance(value, int):
             return {f'Invalid data'}, 400
@@ -232,7 +233,7 @@ def cash_handler():
         db.session.add(account)
         db.session.add(cash)
         db.session.commit()
-        return cash.json
+        return cash.json, 200
 
 
 @app.route('/api/transactions', methods=['GET', 'POST'])
