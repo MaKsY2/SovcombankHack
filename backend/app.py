@@ -121,45 +121,47 @@ def employee_login():
     )
 
 
-@app.route('/api/users/', methods=['GET', 'POST'])
+@app.route('/api/users/', methods=['GET'])
 @token_required
+def get_users():
+    status = fl.request.args.get('status', None)
+    if status:
+        users = User.query.filter_by(status=status).all()
+    else:
+        users = User.query.filter(User.status != 'pending').filter(User.status != 'declined')
+    return [user.json for user in users]
+
+
+@app.route('/api/users/', methods=['POST'])
 def users():
-    if fl.request.method == 'POST':
-        try:
-            phone = fl.request.json.get('phone')
-            passport = fl.request.json.get('passport')
-            first_name = fl.request.json.get('first_name')
-            second_name = fl.request.json.get('second_name')
-            father_name = fl.request.json.get('father_name')
-            password = fl.request.json.get('password')
-        except KeyError:
-            fl.abort(400)
-            return
-        if any(map(lambda s: s == '', [phone, passport, first_name, second_name, password])):
-            fl.abort(400)
-            return
-        user = User.query.filter_by(phone=phone)
-        if user:
-            return {'error': 'user already exists'}, 403
-        user = User(
-            phone=phone,
-            passport=passport,
-            first_name=first_name,
-            second_name=second_name,
-            father_name=father_name,
-            status='pending'
-        )
-        user.hash_password(password)
-        db.session.add(user)
-        db.session.commit()
-        return user.json
-    if fl.request.method == 'GET':
-        status = fl.request.args.get('status', None)
-        if status:
-            users = User.query.filter_by(status=status).all()
-        else:
-            users = User.query.filter(User.status != 'pending').filter(User.status != 'declined')
-        return [user.json for user in users]
+    try:
+        phone = fl.request.json.get('phone')
+        passport = fl.request.json.get('passport')
+        first_name = fl.request.json.get('first_name')
+        second_name = fl.request.json.get('second_name')
+        father_name = fl.request.json.get('father_name')
+        password = fl.request.json.get('password')
+    except KeyError:
+        fl.abort(400)
+        return
+    if any(map(lambda s: s == '', [phone, passport, first_name, second_name, password])):
+        fl.abort(400)
+        return
+    user = User.query.filter_by(phone=phone)
+    if user:
+        return {'error': 'user already exists'}, 403
+    user = User(
+        phone=phone,
+        passport=passport,
+        first_name=first_name,
+        second_name=second_name,
+        father_name=father_name,
+        status='pending'
+    )
+    user.hash_password(password)
+    db.session.add(user)
+    db.session.commit()
+    return user.json
 
 
 @app.route('/api/users/<user_id>/', methods=['GET', 'PATCH', 'DELETE'])
