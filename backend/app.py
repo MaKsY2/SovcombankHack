@@ -1,6 +1,6 @@
 import flask as fl
 from flask_cors import CORS
-from models import db, User, Account
+from models import db, User, Account, Currency
 # from flask_httpauth import HTTPBasicAuth
 
 app = fl.Flask(__name__)
@@ -139,6 +139,16 @@ def transactions_handler():
         from_account = Account.query.get(from_account_id)
         to_account = Account.query.get(to_account_id)
         currencies = (from_account.currency.tag, to_account.currency.tag)
+
+
+@app.route('/api/currencies', methods=['POST'])
+def currencies_handler():
+    tag = fl.request.json.get('tag')
+    name = fl.request.json.get('name')
+    currency = Currency(tag=tag, name=name)
+    db.session.add(currency)
+    db.session.commit()
+    return currency.json
 
 
 if __name__ == '__main__':
