@@ -69,6 +69,28 @@ def users():
         return [user.json for user in users]
 
 
+@app.route('/users/<id>', methods=['GET', 'PATCH', 'DELETE'])
+def user_handler(user_id: int):
+    user = User.query.get(user_id)
+    if not user:
+        return {'error': f'user with id {user_id} not found'}, 404
+    if fl.request.method == 'GET':
+        return user.json
+    if fl.request.method == 'PATCH':
+        action = fl.request.args.get('action', '')
+        if action == 'block':
+            user.status = 'blocked'
+        elif action == 'unblock':
+            user.status = 'active'
+        else:
+            return {'error': 'action is not allowed'}, 403
+    if fl.request.method == 'DELETE':
+        user.status = 'delete'
+    db.session.add(user)
+    db.session.commit()
+    return user.json
+
+
 @app.route('/users/<user_id>/activate', methods=['POST'])
 # @auth.login_required
 def user_activate(user_id: int):
@@ -80,7 +102,7 @@ def user_activate(user_id: int):
         return {'error': f'user with id {user_id} not found'}, 404
     if user.status != 'pending':
         return {'error': 'user is already activated'}, 403
-    user.status = 'pending'
+    user.status = 'active'
     db.session.add(user)
     account = Account(currency_id=1, value=0, user_id=user_id)
     db.session.add(account)
