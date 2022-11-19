@@ -106,7 +106,10 @@ def user_handler(user_id: int):
 @app.route('/api/accounts/', methods=['GET', 'POST'])
 def accounts_handler():
     if fl.request.method == 'GET':
-        accounts = Account.query.all()
+        if user_id := fl.request.args.get('user_id', None):
+            accounts = Account.query.filter_by(user_id=user_id)
+        else:
+            accounts = Account.query.all()
         return [account.json for account in accounts]
     if fl.request.method == "POST":
         currency_id = fl.request.json.get('currency_id')
