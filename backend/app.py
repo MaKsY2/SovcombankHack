@@ -179,6 +179,7 @@ def user_handler(user_id: int):
     if fl.request.method == 'PATCH':
         status = fl.request.json.get('status', '')
         if not status:
+            print(fl.request.json)
             return {"error": 'no status provided'}, 400
         if status == 'active':
             user_id = int(user_id)
