@@ -82,6 +82,18 @@ def user_handler(user_id: int):
             user.status = 'blocked'
         elif action == 'unblock':
             user.status = 'active'
+        elif action == 'reject':
+            user.status = 'rejected'
+        elif action == 'activate':
+            user_id = int(user_id)
+            user = User.query.get(user_id)
+            if not user:
+                return {'error': f'user with id {user_id} not found'}, 404
+            if user.status != 'pending':
+                return {'error': 'user is already activated'}, 403
+            account = Account(currency_id=1, amount=0, user_id=user_id)
+            db.session.add(account)
+            user.status = 'active'
         else:
             return {'error': 'action is not allowed'}, 403
     if fl.request.method == 'DELETE':
@@ -89,23 +101,6 @@ def user_handler(user_id: int):
     db.session.add(user)
     db.session.commit()
     return user.json
-
-
-@app.route('/api/users/<user_id>/activate', methods=['POST'])
-# @auth.login_required
-def user_activate(user_id: int):
-    user_id = int(user_id)
-    user = User.query.get(user_id)
-    if not user:
-        return {'error': f'user with id {user_id} not found'}, 404
-    if user.status != 'pending':
-        return {'error': 'user is already activated'}, 403
-    user.status = 'active'
-    db.session.add(user)
-    account = Account(currency_id=1, amount=0, user_id=user_id)
-    db.session.add(account)
-    db.session.commit()
-    return {'user_id': user_id}, 200
 
 
 @app.route('/api/accounts/', methods=['GET', 'POST'])
