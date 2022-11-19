@@ -94,11 +94,7 @@ def user_handler(user_id: int):
 @app.route('/api/users/<user_id>/activate', methods=['POST'])
 # @auth.login_required
 def user_activate(user_id: int):
-    print(user_id)
-    print(type(user_id))
-    if not isinstance(user_id, int):
-        fl.abort(400)
-        return
+    user_id = int(user_id)
     user = User.query.get(user_id)
     if not user:
         return {'error': f'user with id {user_id} not found'}, 404
