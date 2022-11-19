@@ -71,6 +71,10 @@ def users():
 
 @app.route('/api/users/<user_id>/', methods=['GET', 'PATCH', 'DELETE'])
 def user_handler(user_id: int):
+    try:
+        user_id = int(user_id)
+    except ValueError:
+        fl.abort(400)
     user = User.query.get(user_id)
     if not user:
         return {'error': f'user with id {user_id} not found'}, 404
