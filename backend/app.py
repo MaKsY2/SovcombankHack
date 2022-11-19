@@ -239,6 +239,7 @@ def currencies_handler():
 
 
 @app.route('/api/currencies/<tag>', methods=['GET'])
+@token_required
 def currency_handler(tag):
     currency = Currency.query.filter_by(tag=tag).first()
     if not currency:
