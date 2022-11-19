@@ -14,12 +14,12 @@ with app.app_context():
 # auth = HTTPBasicAuth()
 
 
-@app.route('/index')
+@app.route('/index/')
 def index():
     return 'hello'
 
 
-@app.route('/api/employees/login', methods=['POST'])
+@app.route('/api/employees/login/', methods=['POST'])
 def employee_login():
     try:
         phone = fl.request.json['phone']
