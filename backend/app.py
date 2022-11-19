@@ -71,7 +71,7 @@ def user_login():
             'user_id': user.id,
             'exp': dt.datetime.utcnow() + dt.timedelta(days=1)
         }, app.config['SECRET_KEY'])
-        return fl.make_response({'token': token.decode('UTF-8')}, 201)
+        return fl.make_response({'token': token}, 201)
     # returns 403 if password is wrong
     return fl.make_response(
         'Could not verify',
