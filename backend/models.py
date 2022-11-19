@@ -35,7 +35,8 @@ class User(db.Model):
             "first_name": self.first_name,
             "second_name": self.second_name,
             "father_name": self.father_name,
-            "status": self.status
+            "status": self.status,
+            'accounts': [account.json for account in self.accounts]
         }
 
     def __repr__(self):
