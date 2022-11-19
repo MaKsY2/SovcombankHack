@@ -225,14 +225,16 @@ def transactions_handler():
             return transaction.json
 
 
-@app.route('/api/currencies', methods=['POST'])
+@app.route('/api/currencies', methods=['GET'])
 def currencies_handler():
-    tag = fl.request.json.get('tag')
-    name = fl.request.json.get('name')
-    currency = Currency(tag=tag, name=name)
-    db.session.add(currency)
-    db.session.commit()
-    return currency.json
+    base_tag = fl.request.args.get('base_tag', 'RUB')
+    url = f"https://api.apilayer.com/currency_data/live?source={base_tag}"
+    headers = {"apikey": "EF7FlFQECktMxQLiVtc87Edy9pW0Frvd"}
+    response = requests.request("GET", url, headers=headers)
+    result = response.json()['quotes']
+    for key in result:
+        result[key][:3] = result.pop(key)
+    return list(result.items())
 
 
 if __name__ == '__main__':
