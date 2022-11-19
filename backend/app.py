@@ -86,7 +86,7 @@ def user_handler(user_id: int):
             if not user.accounts:
                 account = Account(currency_id=1, amount=0, user_id=user_id)
                 db.session.add(account)
-        user.status = 'active'
+        user.status = status
     if fl.request.method == 'DELETE':
         user.status = 'delete'
     db.session.add(user)
