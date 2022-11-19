@@ -86,11 +86,6 @@ def user_login():
     )
 
 
-@app.route('/index/')
-def index():
-    return 'hello'
-
-
 @app.route('/api/employees/login/', methods=['POST'])
 def employee_login():
     auth = fl.request.json
