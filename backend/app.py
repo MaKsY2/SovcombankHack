@@ -147,7 +147,7 @@ def users():
     if any(map(lambda s: s == '', [phone, passport, first_name, second_name, password])):
         fl.abort(400)
         return
-    user = User.query.filter_by(phone=phone)
+    user = User.query.filter_by(phone=phone).first()
     if user:
         return {'error': 'user already exists'}, 403
     user = User(
