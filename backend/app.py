@@ -1,17 +1,75 @@
+import datetime as dt
+from functools import wraps
+
 import flask as fl
-from flask_cors import CORS
+# from flask_cors import CORS
 from models import db, User, Account, Currency
-# from flask_httpauth import HTTPBasicAuth
+import jwt
 
 app = fl.Flask(__name__)
 # CORS(app)
 
+app.config['SECRET_KEY'] = 'secret!'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost/sovcombank'
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
-# auth = HTTPBasicAuth()
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'x-access-token' in fl.request.headers:
+            token = fl.request.headers['x-access-token']
+        if not token:
+            return {'message': 'Token is missing !!'}, 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = User.query \
+                .filter_by(id=data['user_id']) \
+                .first()
+        except:
+            return {'message': 'Token is invalid !!'}, 401
+        # returns the current logged in users contex to the routes
+        return f(current_user, *args, **kwargs)
+
+    return decorated
+
+
+@app.route('/api/users/login', methods=['POST'])
+def user_login():
+    auth = fl.request.json
+    if not auth or not auth.get('phone') or not auth.get('password'):
+        # returns 401 if any email or / and password is missing
+        return fl.make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="Login required !!"'}
+        )
+    user = User.query \
+        .filter_by(phone=auth.get('phone')) \
+        .first()
+    if not user:
+        return fl.make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="User does not exist !!"'}
+        )
+
+    if user.verify_password(auth.get('password')):
+        # generates the JWT Token
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': dt.datetime.utcnow() + dt.timedelta(days=1)
+        }, app.config['SECRET_KEY'])
+        return fl.make_response({'token': token.decode('UTF-8')}, 201)
+    # returns 403 if password is wrong
+    return fl.make_response(
+        'Could not verify',
+        403,
+        {'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}
+    )
 
 
 @app.route('/index/')

@@ -2,6 +2,5 @@ flask
 flask-sqlalchemy
 psycopg2
 flask-cors
-flask-login
 passlib
-flask-httpauth
+pyjwt
