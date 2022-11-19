@@ -86,8 +86,6 @@ def user_handler(user_id: int):
             if not user.accounts:
                 account = Account(currency_id=1, amount=0, user_id=user_id)
                 db.session.add(account)
-        else:
-            return {'error': 'action is not allowed'}, 403
         user.status = 'active'
     if fl.request.method == 'DELETE':
         user.status = 'delete'
