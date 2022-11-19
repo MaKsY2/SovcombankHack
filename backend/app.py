@@ -233,7 +233,7 @@ def currencies_handler():
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
     for key in result:
-        result[key][:3] = result.pop(key)
+        result[key[:3]] = result.pop(key)
     return list(result.items())
 
 
