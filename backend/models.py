@@ -118,3 +118,21 @@ class Employee(db.Model):
 
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
+
+
+class Cash(db.Model):
+    __tablename__ = 'cash'
+
+    id = db.Column(db.Integer, primary_key=True)
+    account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
+    value = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "account_id": self.account_id,
+            "value": self.value,
+            "timestamp": self.timestamp.isoformat()
+        }

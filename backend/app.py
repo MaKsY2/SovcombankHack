@@ -4,7 +4,7 @@ from functools import wraps
 import requests
 import flask as fl
 # from flask_cors import CORS
-from models import db, User, Account, Currency, Transaction, Employee
+from models import db, User, Account, Currency, Transaction, Employee, Cash
 import jwt
 from config import SECRET_KEY, APILAYER_KEY
 
@@ -211,6 +211,32 @@ def accounts_handler():
         db.session.add(account)
         db.session.commit()
         return account.json
+
+
+@app.route('/api/cash', methods=['GET', 'POST'])
+@token_required
+def cash_handler():
+    if fl.request.method == 'GET':
+        if account_id := fl.request.args.get('account_id', None):
+            cash = Cash.query.filter_by(account_id=account_id)
+        else:
+            cash = Cash.query.all()
+    if fl.request.method == 'POST':
+        account_id = fl.request.json.get('accound_id')
+        value = fl.request.json.get('value')
+        if not account_id or not isinstance(value, int):
+            return {f'Invalid data'}, 400
+        account = Account.query.get(account_id)
+        if not account:
+            return {f'No such account with id = {account_id}'}
+        if account.amount + value < 0:
+            return {f'Not enough amount on account'}, 403
+        account += value
+        cash = Cash(account_id=account_id, value=value)
+        db.session.add(account)
+        db.session.add(cash)
+        db.session.commit()
+        return cash.json
 
 
 @app.route('/api/transactions', methods=['GET', 'POST'])
