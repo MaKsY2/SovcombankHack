@@ -69,7 +69,7 @@ def users():
         return [user.json for user in users]
 
 
-@app.route('/api/users/<id>', methods=['GET', 'PATCH', 'DELETE'])
+@app.route('/api/users/<id>/', methods=['GET', 'PATCH', 'DELETE'])
 def user_handler(user_id: int):
     user = User.query.get(user_id)
     if not user:
