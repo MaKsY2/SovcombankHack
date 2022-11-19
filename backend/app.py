@@ -32,7 +32,7 @@ def employee_login():
     return fl.Response(status=403)
 
 
-@app.route('/api/users/', methods=['POST'])
+@app.route('/api/users/', methods=['GET', 'POST'])
 def users():
     if fl.request.method == 'POST':
         try:
@@ -59,14 +59,14 @@ def users():
         user.hash_password(password)
         db.session.add(user)
         db.session.commit()
-        return {
-            "phone": user.phone,
-            "passport": user.passport,
-            "first_name": user.first_name,
-            "second_name": user.second_name,
-            "father_name": user.father_name,
-            "status": user.status
-        }
+        return user.json
+    if fl.request.method == 'GET':
+        status = fl.request.args.get('status', None)
+        if status:
+            users = User.query.filter(status=status).all()
+        else:
+            users = User.query.all()
+        return [user.json for user in users]
 
 
 @app.route('/users/<user_id>/activate', methods=['POST'])

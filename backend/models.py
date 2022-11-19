@@ -26,6 +26,17 @@ class User(db.Model):
     def verify_password(self, password):
         return pwd_context.verify(password, self.password_hash)
 
+    @property
+    def json(self):
+        return {
+            "phone": self.phone,
+            "passport": self.passport,
+            "first_name": self.first_name,
+            "second_name": self.second_name,
+            "father_name": self.father_name,
+            "status": self.status
+        }
+
     def __repr__(self):
         return f'User<{self.id}>'
 
