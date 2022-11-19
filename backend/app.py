@@ -228,7 +228,7 @@ def cash_handler():
             return {f'No such account with id = {account_id}'}
         if account.amount + value < 0:
             return {f'Not enough amount on account'}, 403
-        account += value
+        account.amount += value
         cash = Cash(account_id=account_id, value=value)
         db.session.add(account)
         db.session.add(cash)
