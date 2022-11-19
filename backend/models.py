@@ -104,3 +104,17 @@ class Transaction(db.Model):
             "exchange_rate": self.exchange_rate,
             "timestamp": self.timestamp.isoformat()
         }
+
+
+class Employee(db.Model):
+    __tablename__ = 'employees'
+
+    id = db.Column(db.Integer, primary_key=True)
+    phone = db.Column(db.String(100))
+    password_hash = db.Column(db.String(1000), nullable=False)
+
+    def hash_password(self, password):
+        self.password_hash = pwd_context.encrypt(password)
+
+    def verify_password(self, password):
+        return pwd_context.verify(password, self.password_hash)

@@ -4,7 +4,7 @@ from functools import wraps
 import requests
 import flask as fl
 # from flask_cors import CORS
-from models import db, User, Account, Currency, Transaction
+from models import db, User, Account, Currency, Transaction, Employee
 import jwt
 from config import SECRET_KEY, APILAYER_KEY
 
@@ -17,6 +17,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhos
 db.init_app(app)
 with app.app_context():
     db.create_all()
+    employee = Employee(phone='89876543210')
+    employee.hash_password('admin')
+    db.session.add(employee)
+    db.session.commit()
 
 
 def token_required(f):
@@ -89,15 +93,37 @@ def index():
 
 @app.route('/api/employees/login/', methods=['POST'])
 def employee_login():
-    try:
-        phone = fl.request.json['phone']
-        password = fl.request.json['password']
-    except KeyError:
-        fl.abort(400)
-        return
-    if phone == '89876543210' and password == 'admin':
-        return {'status': 'OK'}
-    return fl.Response(status=403)
+    auth = fl.request.json
+    if not auth or not auth.get('phone') or not auth.get('password'):
+        # returns 401 if any email or / and password is missing
+        return fl.make_response(
+            'Could not verify',
+            400,
+            {'WWW-Authenticate': 'Basic realm ="Login required !!"'}
+        )
+    employee = Employee.query \
+        .filter_by(phone=auth.get('phone')) \
+        .first()
+    if not employee:
+        return fl.make_response(
+            'Could not verify',
+            401,
+            {'WWW-Authenticate': 'Basic realm ="User does not exist !!"'}
+        )
+
+    if employee.verify_password(auth.get('password')):
+        # generates the JWT Token
+        token = jwt.encode({
+            'user_id': employee.id,
+            'exp': dt.datetime.utcnow() + dt.timedelta(days=1)
+        }, app.config['SECRET_KEY'])
+        return fl.make_response({'token': token}, 201)
+    # returns 403 if password is wrong
+    return fl.make_response(
+        'Could not verify',
+        403,
+        {'WWW-Authenticate': 'Basic realm ="Wrong Password !!"'}
+    )
 
 
 @app.route('/api/users/', methods=['GET', 'POST'])
