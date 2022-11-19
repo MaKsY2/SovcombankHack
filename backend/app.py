@@ -122,6 +122,7 @@ def employee_login():
 
 
 @app.route('/api/users/', methods=['GET', 'POST'])
+@token_required
 def users():
     if fl.request.method == 'POST':
         try:
@@ -162,6 +163,7 @@ def users():
 
 
 @app.route('/api/users/<user_id>/', methods=['GET', 'PATCH', 'DELETE'])
+@token_required
 def user_handler(user_id: int):
     try:
         user_id = int(user_id)
@@ -190,6 +192,7 @@ def user_handler(user_id: int):
 
 
 @app.route('/api/accounts/', methods=['GET', 'POST'])
+@token_required
 def accounts_handler():
     if fl.request.method == 'GET':
         if user_id := fl.request.args.get('user_id', None):
