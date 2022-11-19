@@ -51,6 +51,14 @@ class Currency(db.Model):
 
     accounts = db.relationship("Account", back_populates="currency")
 
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'tag': self.tag,
+            'name': self.name
+        }
+
 
 class Account(db.Model):
     __tablename__ = 'accounts'
@@ -62,6 +70,15 @@ class Account(db.Model):
 
     currency = db.relationship('Currency', uselist=False, back_populates='accounts')
     user = db.relationship('User', uselist=False, back_populates='accounts')
+
+    @property
+    def json(self):
+        return {
+            'id': self.id,
+            'currency': self.currency.json,
+            'amount': self.amount,
+            'user': self.user.json
+        }
 
 
 class Transaction(db.Model):
