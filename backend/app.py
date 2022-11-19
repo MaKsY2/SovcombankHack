@@ -1,9 +1,10 @@
 import datetime as dt
 from functools import wraps
 
+import requests
 import flask as fl
 # from flask_cors import CORS
-from models import db, User, Account, Currency
+from models import db, User, Account, Currency, Transaction
 import jwt
 
 app = fl.Flask(__name__)
@@ -181,6 +182,7 @@ def accounts_handler():
 
 
 @app.route('/api/transactions', methods=['GET', 'POST'])
+@token_required
 def transactions_handler():
     if fl.request.method == 'GET':
         if user_id := fl.request.args.get('user_id', None):
@@ -198,6 +200,24 @@ def transactions_handler():
         from_account = Account.query.get(from_account_id)
         to_account = Account.query.get(to_account_id)
         currencies = (from_account.currency.tag, to_account.currency.tag)
+        if from_value is None and to_value:
+            from_value, to_value = (to_value, from_value)
+            currencies = (currencies[1], currencies[0])
+            res = requests.get(f'https://api.apilayer.com/currency_data/convert?from={currencies[0]}&to={currencies[1]}&amount={from_value}')
+            if res.status_code != 200:
+                return {'error': 'Error fetching currency'}, 500
+            result = res.json()
+            transaction = Transaction(
+                from_account_id=from_account_id,
+                to_account_id=to_account_id,
+                from_value=from_value,
+                to_value=result['result'],
+                exchange_rate=result['info']['quote'],
+                timestamp=dt.datetime.utcnow()
+            )
+            db.session.add(transaction)
+            db.session.commit()
+            return transaction.json
 
 
 @app.route('/api/currencies', methods=['POST'])

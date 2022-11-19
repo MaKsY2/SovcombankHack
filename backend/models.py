@@ -92,3 +92,15 @@ class Transaction(db.Model):
     to_value = db.Column(db.Float, nullable=False)
     exchange_rate = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
+
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "from_account_id": self.from_account_id,
+            "to_account_id": self.to_account_id,
+            "from_value": self.from_value,
+            "to_value": self.to_value,
+            "exchange_rate": self.exchange_rate,
+            "timestamp": self.timestamp.isoformat()
+        }
