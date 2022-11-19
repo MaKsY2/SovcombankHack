@@ -63,7 +63,7 @@ def users():
     if fl.request.method == 'GET':
         status = fl.request.args.get('status', None)
         if status:
-            users = User.query.filter(status=status).all()
+            users = User.query.filter_by(status=status).all()
         else:
             users = User.query.all()
         return [user.json for user in users]
@@ -108,6 +108,13 @@ def user_activate(user_id: int):
     db.session.add(account)
     db.session.commit()
     return {'user_id': user_id}, 200
+
+
+@app.route('/api/accounts/', methods=['GET', 'POST'])
+def accounts():
+    if fl.request.method == 'GET':
+        accounts = Account.query.all()
+        return [account.json for account in accounts]
 
 
 if __name__ == '__main__':

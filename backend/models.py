@@ -62,6 +62,10 @@ class Account(db.Model):
     currency = db.relationship('Currency', uselist=False, back_populates='accounts')
     user = db.relationship('User', uselist=False, back_populates='accounts')
 
+    @property
+    def json(self):
+
+
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
