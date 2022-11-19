@@ -255,7 +255,7 @@ def currency_handler(tag):
     if response.status_code != 200:
         return {'error': 'incorrect data'}, 400
     result = response.json()['quotes']
-    for key, value in result:
+    for key, value in result.items():
         result[key] = value[base_tag + currency.tag]
     return result
 
