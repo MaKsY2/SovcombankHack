@@ -94,6 +94,8 @@ def user_handler(user_id: int):
 @app.route('/api/users/<user_id>/activate', methods=['POST'])
 # @auth.login_required
 def user_activate(user_id: int):
+    print(user_id)
+    print(type(user_id))
     if not isinstance(user_id, int):
         fl.abort(400)
         return
