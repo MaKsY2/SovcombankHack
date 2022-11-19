@@ -228,6 +228,7 @@ def transactions_handler():
 
 
 @app.route('/api/currencies', methods=['GET'])
+@token_required
 def currencies_handler():
     base_tag = fl.request.args.get('base_tag', 'RUB')
     url = f"https://api.apilayer.com/currency_data/live?source={base_tag}"
@@ -235,6 +236,28 @@ def currencies_handler():
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
     return [{'tag': key[3:], 'rate': rate} for key, rate in result.items()]
+
+
+@app.route('/api/currencies/<tag>', methods=['GET'])
+def currency_handler(tag):
+    currency = Currency.query.filter_by(tag=tag).first()
+    if not currency:
+        return {'error': 'incorrect tag'}, 400
+
+    base_tag = fl.request.args.get('base_tag', 'RUB' if currency.tag != 'RUB' else 'USD')
+    timedelta = fl.request.args.get('timedelta', 365)
+    start_date = fl.request.args.get('start_date',
+                                     dt.date.today() - dt.timedelta(days=timedelta))
+    end_date = fl.request.args.get('end_date', dt.date.today())
+    url = "https://api.apilayer.com/currency_data/timeframe?start_date=2018-02-25&end_date=2018-02-26"
+    headers = {"apikey": app.config['APILAYER_KEY']}
+    response = requests.get(url, headers)
+    if response.status_code != 200:
+        return {'error': 'incorrect data'}, 400
+    result = response.json()['quotes']
+    for key, value in result:
+        result[key] = value[base_tag + currency.tag]
+    return result
 
 
 if __name__ == '__main__':
