@@ -83,10 +83,9 @@ def user_handler(user_id: int):
             user = User.query.get(user_id)
             if not user:
                 return {'error': f'user with id {user_id} not found'}, 404
-            if user.status != 'pending':
-                return {'error': 'user is already activated'}, 403
-            account = Account(currency_id=1, amount=0, user_id=user_id)
-            db.session.add(account)
+            if not user.accounts:
+                account = Account(currency_id=1, amount=0, user_id=user_id)
+                db.session.add(account)
         else:
             return {'error': 'action is not allowed'}, 403
         user.status = 'active'
