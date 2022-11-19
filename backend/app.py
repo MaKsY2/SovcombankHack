@@ -232,9 +232,10 @@ def currencies_handler():
     headers = {"apikey": "EF7FlFQECktMxQLiVtc87Edy9pW0Frvd"}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
+    formatted_result = dict()
     for key in result:
-        result[key[:3]] = result.pop(key)
-    return list(result.items())
+        formatted_result[key[:3]] = result.pop(key)
+    return list(formatted_result.items())
 
 
 if __name__ == '__main__':
