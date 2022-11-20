@@ -212,6 +212,7 @@ def accounts_handler():
 @app.route('/api/cash', methods=['GET', 'POST'])
 @token_required
 def cash_handler():
+    print(fl.request.json)
     if fl.request.method == 'GET':
         if account_id := fl.request.args.get('account_id', None):
             cash = Cash.query.filter_by(account_id=account_id)
@@ -225,7 +226,7 @@ def cash_handler():
             return {f'Invalid data'}, 400
         account = Account.query.get(account_id)
         if not account:
-            return {f'No such account with id = {account_id}'}
+            return {f'No such account with id = {account_id}'}, 404
         if account.amount + value < 0:
             return {f'Not enough amount on account'}, 403
         account.amount += value
