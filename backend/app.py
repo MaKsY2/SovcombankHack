@@ -40,7 +40,7 @@ def token_required(f):
     return decorated
 
 
-@app.route('/api/users/login', methods=['POST'])
+@app.route('/api/users/login/', methods=['POST'])
 def user_login():
     auth = fl.request.json
     if not auth or not auth.get('phone') or not auth.get('password'):
@@ -212,7 +212,7 @@ def accounts_handler():
         return account.json, 201
 
 
-@app.route('/api/cash', methods=['GET', 'POST'])
+@app.route('/api/cash/', methods=['GET', 'POST'])
 @token_required
 def cash_handler():
     print(fl.request.json)
@@ -240,7 +240,7 @@ def cash_handler():
         return cash.json, 200
 
 
-@app.route('/api/transactions', methods=['GET', 'POST'])
+@app.route('/api/transactions/', methods=['GET', 'POST'])
 @token_required
 def transactions_handler():
     if fl.request.method == 'GET':
