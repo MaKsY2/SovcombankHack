@@ -200,9 +200,12 @@ def accounts_handler():
             accounts = Account.query.all()
         return [account.json for account in accounts]
     if fl.request.method == "POST":
-        currency_id = fl.request.json.get('currency_id')
+        try:
+            currency_id = fl.request.json.get('currency_id')
+            user_id = fl.request.json.get('user_id')
+        except KeyError:
+            return {'error': 'invalid response'}, 400
         amount = 0
-        user_id = fl.request.json.get('user_id')
         account = Account(currency_id=currency_id, amount=amount, user_id=user_id)
         db.session.add(account)
         db.session.commit()
