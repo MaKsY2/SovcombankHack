@@ -131,12 +131,12 @@ def get_users():
 @app.route('/api/users/', methods=['POST'])
 def users():
     try:
-        phone = fl.request.json.get('phone')
-        passport = fl.request.json.get('passport')
-        first_name = fl.request.json.get('first_name')
-        second_name = fl.request.json.get('second_name')
-        father_name = fl.request.json.get('father_name')
-        password = fl.request.json.get('password')
+        phone = fl.request.json['phone']
+        passport = fl.request.json['passport']
+        first_name = fl.request.json['first_name']
+        second_name = fl.request.json['second_name']
+        father_name = fl.request.json['father_name']
+        password = fl.request.json['password']
     except KeyError:
         fl.abort(400)
         return
@@ -175,7 +175,6 @@ def user_handler(user_id: int):
     if fl.request.method == 'PATCH':
         status = fl.request.json.get('status', '')
         if not status:
-            print(fl.request.json)
             return {"error": 'no status provided'}, 400
         if status == 'active':
             user_id = int(user_id)
@@ -201,12 +200,10 @@ def accounts_handler():
         return [account.json for account in accounts], 200
     if fl.request.method == "POST":
         try:
-            currency_tag = fl.request.json.get('currency_tag')
-            user_id = fl.request.json.get('user_id')
+            currency_tag = fl.request.json['currency_tag']
+            user_id = fl.request.json['user_id']
         except KeyError:
             return {'error': 'invalid response'}, 400
-        print(currency_tag)
-        print(user_id)
         amount = 0
         account = Account(currency_tag=currency_tag, amount=amount, user_id=user_id)
         db.session.add(account)
