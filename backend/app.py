@@ -315,34 +315,33 @@ def currencies_handler():
     return [c.json for c in currencies]
 
 
-# @app.route('/api/timeframe/', methods=['GET'])
-# @token_required
-# def currency_handler():
-#     from_tag = fl.request.args.get('from_tag', 'RUB')
-#     to_tag = fl.request.args.get('to_tag', 'RUB')
-#     from_currency = Currency.query.get(from_tag)
-#     to_currency = Currency.query.get(to_tag)
-#     if not from_currency or to_currency:
-#         return {'error': 'incorrect tag'}, 400
-#
-#     base_tag = fl.request.args.get('base_tag', 'RUB' if currency.tag != 'RUB' else 'USD')
-#     timedelta = fl.request.args.get('timedelta', 365)
-#     start_date = fl.request.args.get('start_date',
-#                                      dt.date.today() - dt.timedelta(days=timedelta))
-#     end_date = fl.request.args.get('end_date', dt.date.today())
-#     url = f"https://api.apilayer.com/currency_data/timeframe" \
-#           f"?start_date={start_date}" \
-#           f"&end_date={end_date}" \
-#           f"&source={base_tag}" \
-#           f"&currencies={currency.tag}"
-#     headers = {"apikey": app.config['APILAYER_KEY']}
-#     response = requests.get(url, headers)
-#     if response.status_code != 200:
-#         return {'error': 'incorrect data'}, 400
-#     result = response.json()['quotes']
-#     for key, value in result.items():
-#         result[key] = value[base_tag + currency.tag]
-#     return result
+@app.route('/api/timeframe/', methods=['GET'])
+@token_required
+def currency_handler():
+    from_tag = fl.request.args.get('from_tag', 'RUB')
+    to_tag = fl.request.args.get('to_tag', 'RUB')
+    from_currency = Currency.query.get(from_tag)
+    to_currency = Currency.query.get(to_tag)
+    if not from_currency or to_currency:
+        return {'error': 'incorrect tag'}, 400
+
+    timedelta = fl.request.args.get('timedelta', 365)
+    start_date = fl.request.args.get('start_date',
+                                     dt.date.today() - dt.timedelta(days=timedelta))
+    end_date = fl.request.args.get('end_date', dt.date.today())
+    url = f"https://api.apilayer.com/currency_data/timeframe" \
+          f"?start_date={start_date}" \
+          f"&end_date={end_date}" \
+          f"&source={from_tag}" \
+          f"&currencies={to_tag}"
+    headers = {"apikey": app.config['APILAYER_KEY']}
+    response = requests.get(url, headers)
+    if response.status_code != 200:
+        return {'error': 'incorrect data'}, 400
+    result = response.json()['quotes']
+    for key, value in result.items():
+        result[key] = value[from_tag + to_tag]
+    return result
 
 
 if __name__ == '__main__':
