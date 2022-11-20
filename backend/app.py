@@ -281,7 +281,8 @@ def transactions_handler():
             sell_value=sell_value,
             buy_value=buy_value,
             exchange_rate=result['info']['quote'],
-            timestamp=dt.datetime.utcnow()
+            timestamp=dt.datetime.utcnow(),
+            user_id=sell_account.user_id
         )
         db.session.add(sell_account)
         db.session.add(buy_account)
