@@ -291,15 +291,29 @@ def transactions_handler():
         return transaction.json
 
 
-@app.route('/api/currencies', methods=['GET'])
+@app.route('/api/rates/', methods=['GET'])
 @token_required
-def currencies_handler():
+def currencies_rates_handler():
+    currencies_by_tag = {
+        c.tag: c for c in Currency.query.all()
+    }
+
     base_tag = fl.request.args.get('base_tag', 'RUB')
     url = f"https://api.apilayer.com/currency_data/live?source={base_tag}"
     headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
-    return [{'tag': key[3:], 'rate': rate} for key, rate in result.items()]
+    return [{'from_id': currencies_by_tag[key[:3]],
+             'to_id': currencies_by_tag[key[3:]],
+             'rate': rate}
+            for key, rate in result.items()]
+
+
+@app.route('/api/currencies/', methods=['GET'])
+@token_required
+def currencies_handler():
+    currencies = Currency.query.all()
+    return [c.json for c in currencies]
 
 
 @app.route('/api/currencies/<tag>', methods=['GET'])
