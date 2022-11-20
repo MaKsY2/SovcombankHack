@@ -102,6 +102,7 @@ class Transaction(db.Model):
     def json(self):
         return {
             "id": self.id,
+            "user_id": self.user_id,
             "sell_account_id": self.sell_account_id,
             "buy_account_id": self.buy_account_id,
             "sell_value": self.sell_value,
