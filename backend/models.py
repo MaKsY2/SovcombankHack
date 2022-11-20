@@ -93,8 +93,8 @@ class Transaction(db.Model):
     exchange_rate = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
-    sell_account = db.relationship('Account', foreign_key='sell_account_id')
-    buy_account = db.relationship('Account', foreign_key='buy_account_id')
+    sell_account = db.relationship('Account', foreign_keys=['sell_account_id'])
+    buy_account = db.relationship('Account', foreign_keys=['buy_account_id'])
 
     @property
     def json(self):
