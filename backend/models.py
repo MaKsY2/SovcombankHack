@@ -63,7 +63,7 @@ class Account(db.Model):
     __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-    currency_tag = db.Column(db.String(3), db.ForeignKey('currencies.tag'))
+    currency_tag = db.Column(db.String(3), db.ForeignKey('currencies.tag'), nullable=False)
     amount = db.Column(db.DECIMAL, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
