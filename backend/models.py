@@ -66,7 +66,7 @@ class Account(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
-    amount = db.Column(db.Decimal, default=0.0)
+    amount = db.Column(db.DECIMAL, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     currency = db.relationship('Currency', uselist=False, back_populates='accounts')
@@ -88,8 +88,8 @@ class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sell_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
     buy_account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
-    sell_value = db.Column(db.Decimal, nullable=False)
-    buy_value = db.Column(db.Decimal, nullable=False)
+    sell_value = db.Column(db.DECIMAL, nullable=False)
+    buy_value = db.Column(db.DECIMAL, nullable=False)
     exchange_rate = db.Column(db.Float, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
@@ -125,7 +125,7 @@ class Cash(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'))
-    value = db.Column(db.Decimal, nullable=False)
+    value = db.Column(db.DECIMAL, nullable=False)
     timestamp = db.Column(db.DateTime(timezone=True), server_default=func.now())
 
     @property
