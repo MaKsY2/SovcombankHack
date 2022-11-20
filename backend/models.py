@@ -46,8 +46,7 @@ class User(db.Model):
 class Currency(db.Model):
     __tablename__ = 'currencies'
 
-    id = db.Column(db.Integer, primary_key=True)
-    tag = db.Column(db.String(10), nullable=False, unique=True)
+    tag = db.Column(db.String(3), primary_key=True, nullable=False, unique=True)
     name = db.Column(db.String(100), nullable=False)
 
     accounts = db.relationship("Account", back_populates="currency")
@@ -55,7 +54,6 @@ class Currency(db.Model):
     @property
     def json(self):
         return {
-            'id': self.id,
             'tag': self.tag,
             'name': self.name
         }
@@ -65,7 +63,7 @@ class Account(db.Model):
     __tablename__ = 'accounts'
 
     id = db.Column(db.Integer, primary_key=True)
-    currency_id = db.Column(db.Integer, db.ForeignKey('currencies.id'))
+    currency_tag = db.Column(db.String(3), db.ForeignKey('currencies.tag'))
     amount = db.Column(db.DECIMAL, default=0.0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 

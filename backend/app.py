@@ -201,12 +201,12 @@ def accounts_handler():
         return [account.json for account in accounts], 200
     if fl.request.method == "POST":
         try:
-            currency_id = fl.request.json.get('currency_id')
+            currency_tag = fl.request.json.get('currency_tag')
             user_id = fl.request.json.get('user_id')
         except KeyError:
             return {'error': 'invalid response'}, 400
         amount = 0
-        account = Account(currency_id=currency_id, amount=amount, user_id=user_id)
+        account = Account(currency_tag=currency_tag, amount=amount, user_id=user_id)
         db.session.add(account)
         db.session.commit()
         return account.json, 201
@@ -302,8 +302,8 @@ def currencies_rates_handler():
     headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
-    return [{'from_id': currencies_by_tag[key[:3]].id,
-             'to_id': currencies_by_tag[key[3:]].id,
+    return [{'from_tag': currencies_by_tag[key[:3]].tag,
+             'to_tag': currencies_by_tag[key[3:]].tag,
              'rate': rate}
             for key, rate in result.items()]
 
@@ -315,31 +315,34 @@ def currencies_handler():
     return [c.json for c in currencies]
 
 
-@app.route('/api/currencies/<tag>', methods=['GET'])
-@token_required
-def currency_handler(tag):
-    currency = Currency.query.filter_by(tag=tag).first()
-    if not currency:
-        return {'error': 'incorrect tag'}, 400
-
-    base_tag = fl.request.args.get('base_tag', 'RUB' if currency.tag != 'RUB' else 'USD')
-    timedelta = fl.request.args.get('timedelta', 365)
-    start_date = fl.request.args.get('start_date',
-                                     dt.date.today() - dt.timedelta(days=timedelta))
-    end_date = fl.request.args.get('end_date', dt.date.today())
-    url = f"https://api.apilayer.com/currency_data/timeframe" \
-          f"?start_date={start_date}" \
-          f"&end_date={end_date}" \
-          f"&source={base_tag}" \
-          f"&currencies={currency.tag}"
-    headers = {"apikey": app.config['APILAYER_KEY']}
-    response = requests.get(url, headers)
-    if response.status_code != 200:
-        return {'error': 'incorrect data'}, 400
-    result = response.json()['quotes']
-    for key, value in result.items():
-        result[key] = value[base_tag + currency.tag]
-    return result
+# @app.route('/api/timeframe/', methods=['GET'])
+# @token_required
+# def currency_handler():
+#     from_tag = fl.request.args.get('from_tag', 'RUB')
+#     to_tag = fl.request.args.get('to_tag', 'RUB')
+#     from_currency = Currency.query.get(from_tag)
+#     to_currency = Currency.query.get(to_tag)
+#     if not from_currency or to_currency:
+#         return {'error': 'incorrect tag'}, 400
+#
+#     base_tag = fl.request.args.get('base_tag', 'RUB' if currency.tag != 'RUB' else 'USD')
+#     timedelta = fl.request.args.get('timedelta', 365)
+#     start_date = fl.request.args.get('start_date',
+#                                      dt.date.today() - dt.timedelta(days=timedelta))
+#     end_date = fl.request.args.get('end_date', dt.date.today())
+#     url = f"https://api.apilayer.com/currency_data/timeframe" \
+#           f"?start_date={start_date}" \
+#           f"&end_date={end_date}" \
+#           f"&source={base_tag}" \
+#           f"&currencies={currency.tag}"
+#     headers = {"apikey": app.config['APILAYER_KEY']}
+#     response = requests.get(url, headers)
+#     if response.status_code != 200:
+#         return {'error': 'incorrect data'}, 400
+#     result = response.json()['quotes']
+#     for key, value in result.items():
+#         result[key] = value[base_tag + currency.tag]
+#     return result
 
 
 if __name__ == '__main__':
