@@ -222,7 +222,7 @@ def cash_handler():
     if fl.request.method == 'POST':
         account_id = fl.request.json.get('account_id')
         value = fl.request.json.get('value')
-        if not account_id or not isinstance(value, int):
+        if account_id is None or not isinstance(value, int):
             return {'error': f'Invalid data'}, 400
         account = Account.query.get(account_id)
         if not account:
