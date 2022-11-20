@@ -198,7 +198,7 @@ def accounts_handler():
             accounts = Account.query.filter_by(user_id=user_id)
         else:
             accounts = Account.query.all()
-        return [account.json for account in accounts]
+        return [account.json for account in accounts], 200
     if fl.request.method == "POST":
         try:
             currency_id = fl.request.json.get('currency_id')
@@ -209,7 +209,7 @@ def accounts_handler():
         account = Account(currency_id=currency_id, amount=amount, user_id=user_id)
         db.session.add(account)
         db.session.commit()
-        return account.json
+        return account.json, 201
 
 
 @app.route('/api/cash', methods=['GET', 'POST'])
