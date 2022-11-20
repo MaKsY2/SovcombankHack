@@ -75,7 +75,7 @@ class Account(db.Model):
         return {
             'id': self.id,
             'currency': self.currency.json,
-            'amount': self.amount,
+            'amount': int(self.amount),
             'user_id': self.user_id
         }
 
@@ -103,8 +103,8 @@ class Transaction(db.Model):
             "user_id": self.user_id,
             "sell_account_id": self.sell_account_id,
             "buy_account_id": self.buy_account_id,
-            "sell_value": self.sell_value,
-            "buy_value": self.buy_value,
+            "sell_value": int(self.sell_value),
+            "buy_value": int(self.buy_value),
             "exchange_rate": self.exchange_rate,
             "timestamp": self.timestamp.isoformat(),
             "sell_account": self.sell_account.json,
@@ -139,6 +139,6 @@ class Cash(db.Model):
         return {
             "id": self.id,
             "account_id": self.account_id,
-            "value": self.value,
+            "value": int(self.value),
             "timestamp": self.timestamp.isoformat()
         }
