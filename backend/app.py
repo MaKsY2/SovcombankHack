@@ -223,12 +223,12 @@ def cash_handler():
         account_id = fl.request.json.get('account_id')
         value = fl.request.json.get('value')
         if not account_id or not isinstance(value, int):
-            return {f'Invalid data'}, 400
+            return {'error': f'Invalid data'}, 400
         account = Account.query.get(account_id)
         if not account:
-            return {f'No such account with id = {account_id}'}, 404
+            return {'error': f'No such account with id = {account_id}'}, 404
         if account.amount + value < 0:
-            return {f'Not enough amount on account'}, 403
+            return {'error': 'Not enough amount on account'}, 403
         account.amount += value
         cash = Cash(account_id=account_id, value=value)
         db.session.add(account)
