@@ -215,7 +215,6 @@ def accounts_handler():
 @app.route('/api/cash/', methods=['GET', 'POST'])
 @token_required
 def cash_handler():
-    print(fl.request.json)
     if fl.request.method == 'GET':
         if account_id := fl.request.args.get('account_id', None):
             cash = Cash.query.filter_by(account_id=account_id)
@@ -303,8 +302,8 @@ def currencies_rates_handler():
     headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
-    return [{'from_id': currencies_by_tag[key[:3]],
-             'to_id': currencies_by_tag[key[3:]],
+    return [{'from_id': currencies_by_tag[key[:3]].json,
+             'to_id': currencies_by_tag[key[3:]].json,
              'rate': rate}
             for key, rate in result.items()]
 
