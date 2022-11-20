@@ -245,8 +245,8 @@ def cash_handler():
 def transactions_handler():
     if fl.request.method == 'GET':
         if user_id := fl.request.args.get('user_id', None):
-            transactions = Transaction.query.filter(Transaction.sell_account_id.user_id == user_id
-                                                    or Transaction.buy_account_id.user_id == user_id)
+            transactions = Transaction.query.filter(Transaction.sell_account.user_id == user_id
+                                                    or Transaction.buy_account.user_id == user_id)
         else:
             transactions = Transaction.query.all()
         return [t.json for t in transactions]
