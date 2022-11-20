@@ -193,7 +193,6 @@ def user_handler(user_id: int):
 @app.route('/api/accounts/', methods=['GET', 'POST'])
 @token_required
 def accounts_handler():
-    print(fl.request.json)
     if fl.request.method == 'GET':
         if user_id := fl.request.args.get('user_id', None):
             accounts = Account.query.filter_by(user_id=user_id)
@@ -206,6 +205,8 @@ def accounts_handler():
             user_id = fl.request.json.get('user_id')
         except KeyError:
             return {'error': 'invalid response'}, 400
+        print(currency_tag)
+        print(user_id)
         amount = 0
         account = Account(currency_tag=currency_tag, amount=amount, user_id=user_id)
         db.session.add(account)
