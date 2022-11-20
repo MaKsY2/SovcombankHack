@@ -276,7 +276,7 @@ def transactions_handler():
         sell_account.amount -= sell_value
         buy_account.amount += buy_value
         transaction = Transaction(
-            selll_account_id=sell_account_id,
+            sell_account_id=sell_account_id,
             buy_account_id=buy_account_id,
             sell_value=sell_value,
             buy_value=buy_value,
