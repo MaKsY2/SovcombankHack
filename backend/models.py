@@ -108,7 +108,9 @@ class Transaction(db.Model):
             "sell_value": self.sell_value,
             "buy_value": self.buy_value,
             "exchange_rate": self.exchange_rate,
-            "timestamp": self.timestamp.isoformat()
+            "timestamp": self.timestamp.isoformat(),
+            "sell_account": self.sell_account.json,
+            "buy_account": self.buy_account.json
         }
 
 
