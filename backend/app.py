@@ -302,8 +302,8 @@ def currencies_rates_handler():
     headers = {"apikey": app.config['APILAYER_KEY']}
     response = requests.request("GET", url, headers=headers)
     result = response.json()['quotes']
-    return [{'from_id': currencies_by_tag[key[:3]].json,
-             'to_id': currencies_by_tag[key[3:]].json,
+    return [{'from_id': currencies_by_tag[key[:3]].id,
+             'to_id': currencies_by_tag[key[3:]].id,
              'rate': rate}
             for key, rate in result.items()]
 
