@@ -320,10 +320,10 @@ def currencies_handler():
 def currency_handler():
     from_tag = fl.request.args.get('from_tag', 'RUB')
     to_tag = fl.request.args.get('to_tag', 'RUB')
-    print(from_tag, to_tag)
     from_currency = Currency.query.filter_by(tag=from_tag).first()
     to_currency = Currency.query.filter_by(tag=to_tag).first()
-    if not from_currency or to_currency:
+
+    if from_currency is None or to_currency is None:
         return {'error': 'incorrect tag'}, 400
 
     timedelta = fl.request.args.get('timedelta', 365)
