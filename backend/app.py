@@ -180,7 +180,7 @@ def user_handler(user_id: int):
         if status == 'active':
             user_id = int(user_id)
             if not user.accounts:
-                account = Account(currency_id=1, amount=0, user_id=user_id)
+                account = Account(currency_tag='RUB', amount=0, user_id=user_id)
                 db.session.add(account)
         user.status = status
     if fl.request.method == 'DELETE':
