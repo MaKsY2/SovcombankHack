@@ -329,11 +329,5 @@ def currency_handler(tag):
     return result
 
 
-@app.route('/api/currencies/', methods=['GET'])
-def currencies_handler():
-    currencies = Currency.query.all()
-    return [c.json for c in currencies]
-
-
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8084, debug=True)
