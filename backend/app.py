@@ -245,10 +245,10 @@ def cash_handler():
 def transactions_handler():
     if fl.request.method == 'GET':
         if user_id := fl.request.args.get('user_id', None):
-            accounts = Account.query.filter_by(user_id=user_id)
+            transactions = Transaction.query.filter_by(user_id=user_id)
         else:
-            accounts = Account.query.all()
-        return [account.json for account in accounts]
+            transactions = Transaction.query.all()
+        return [t.json for t in transactions]
     if fl.request.method == 'POST':
         sell_account_id = fl.request.json.get('sell_account_id', None)
         buy_account_id = fl.request.json.get('buy_account_id', None)
