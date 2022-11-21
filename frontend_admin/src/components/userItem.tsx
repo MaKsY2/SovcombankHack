@@ -54,7 +54,7 @@ const UserItem: FC<UserItemProps> = ({current_user}) => {
                 setUser(current_user);
                 console.log(user);
                 let res = await fetch(
-                    "https://sovcombank.scipie.ru/api/transactions?user_id=" + user.id,
+                    "https://sovcombank.scipie.ru/api/transactions/?user_id=" + user.id,
                     {
                         method: "GET",
                         headers: {
